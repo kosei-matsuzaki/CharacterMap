@@ -1,0 +1,119 @@
+/* src/index.css */
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* --- 人物ノードのスタイル --- */
+.person-node {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  /* ★修正: Viewerで操作不可設定になっていても、ホバー反応だけは有効にする */
+  pointer-events: auto !important; 
+}
+
+/* ホバー時に浮き上がる */
+.person-node:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+  transform: translateY(-2px);
+  border-color: #2196F3 !important;
+  z-index: 1000; /* ホバー時は手前に表示 */
+}
+
+/* --- ボタンの共通スタイル (CSSクラス化) --- */
+.btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  min-width: 80px;
+  text-align: center;
+  transition: all 0.2s ease; /* ホバー時のアニメーション */
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ホバー時に少し浮き上がり、透明度を変える */
+.btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* 押した時の凹み */
+.btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* プライマリーボタン (青) */
+.btn-primary {
+  background: #2196F3;
+  color: white;
+  padding: 6px 16px;
+}
+
+/* 危険ボタン (赤) */
+.btn-danger {
+  background: #ff4444;
+  color: white;
+  padding: 6px 16px;
+}
+
+/* セカンダリーボタン (白/グレー) */
+.btn-secondary {
+  background: white;
+  color: #555;
+  border: 1px solid #ccc;
+  padding: 6px 16px;
+}
+
+/* アイコンボタン (設定ギアなど) */
+.btn-icon {
+  background: transparent;
+  color: #555;
+  min-width: auto;
+  padding: 5px;
+  font-size: 16px;
+}
+.btn-icon:hover {
+  background: rgba(0,0,0,0.05);
+  transform: rotate(15deg); /* 回転アニメーション */
+}
+
+/* 線自体（パス）のアニメーション */
+.react-flow__edge-path {
+  transition: stroke 0.2s, stroke-width 0.2s;
+  stroke: #b1b1b7;
+  fill: none;
+}
+
+/* ★追加: 自作矢印のスタイル */
+.edge-arrow {
+  transition: fill 0.2s;
+  fill: #b1b1b7; /* デフォルトの色 */
+  pointer-events: none; /* 矢印自体はクリック判定を持たせない（下の透明な線に任せる） */
+}
+
+/* 線（親要素）にホバーした時 */
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #2196F3 !important;
+  stroke-width: 4px !important;
+}
+
+/* ★追加: 線にホバーした時、矢印も青くする */
+.react-flow__edge:hover .edge-arrow {
+  fill: #2196F3 !important;
+}
+
+/* ラベルテキスト */
+.react-flow__edge:hover text {
+  fill: #2196F3 !important;
+  font-weight: bold !important;
+  transition: fill 0.2s;
+}
