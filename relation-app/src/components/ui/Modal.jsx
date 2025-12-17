@@ -1,28 +1,41 @@
-import { STYLES } from "../../constants";
+import { useEffect } from "react";
+// STYLES の import は不要
 
 export default function Modal({ isOpen, onClose, title, children, footer }) {
+	// ESCキーで閉じる処理
+	useEffect(() => {
+		const handleEsc = (e) => {
+			if (e.key === "Escape") onClose();
+		};
+		if (isOpen) window.addEventListener("keydown", handleEsc);
+		return () => window.removeEventListener("keydown", handleEsc);
+	}, [isOpen, onClose]);
+
 	if (!isOpen) return null;
+
 	return (
-		<div style={STYLES.modalOverlay} onClick={onClose}>
-			<div style={STYLES.modalContent} onClick={(e) => e.stopPropagation()}>
-				{title && (
-					<h3 style={{ margin: "0 0 10px 0", fontSize: "16px" }}>{title}</h3>
-				)}
-				{children}
-				{footer && (
-					// ★修正: justify-content: flex-end を追加してボタンを右寄せに
-					// 必要に応じて space-between などに変更してください
-					<div
+		<div className="modal-overlay" onClick={onClose}>
+			<div className="modal-container" onClick={(e) => e.stopPropagation()}>
+				<div className="modal-header">
+					<h2 className="modal-title">{title}</h2>
+					{/* 閉じるボタン (x) */}
+					<button
+						onClick={onClose}
 						style={{
-							display: "flex",
-							gap: "10px",
-							marginTop: "10px",
-							justifyContent: "flex-end",
+							border: "none",
+							background: "none",
+							fontSize: "20px",
+							cursor: "pointer",
+							color: "#999",
 						}}
 					>
-						{footer}
-					</div>
-				)}
+						×
+					</button>
+				</div>
+
+				<div className="modal-body">{children}</div>
+
+				{footer && <div className="modal-footer">{footer}</div>}
 			</div>
 		</div>
 	);

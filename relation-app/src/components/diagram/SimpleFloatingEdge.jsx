@@ -6,7 +6,7 @@ export default function SimpleFloatingEdge({
 	id,
 	source,
 	target,
-	style, // ★ここにHookからの stroke (色) が入ってくる
+	style,
 	label,
 }) {
 	const sourceNode = useStore(
@@ -16,17 +16,70 @@ export default function SimpleFloatingEdge({
 		useCallback((store) => store.nodeInternals.get(target), [target])
 	);
 
+	const edges = useStore((s) => s.edges);
+	const hasBidirectionalEdge = edges.some(
+		(e) => e.source === target && e.target === source && e.id !== id
+	);
+
 	if (!sourceNode || !targetNode) {
 		return null;
 	}
 
-	const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
+	// 1. まずは通常の（中心に向かう）接続点を計算
+	let { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
+
+	// 2. 双方向エッジがある場合、座標を平行移動させてからノード範囲内に収める
+	if (hasBidirectionalEdge) {
+		const offset = 18; // ずらす距離
+
+		// ベクトル計算
+		const centerSourceX = sourceNode.position.x + (sourceNode.width || 85) / 2;
+		const centerSourceY =
+			sourceNode.position.y + (sourceNode.height || 100) / 2;
+		const centerTargetX = targetNode.position.x + (targetNode.width || 85) / 2;
+		const centerTargetY =
+			targetNode.position.y + (targetNode.height || 100) / 2;
+
+		const dx = centerTargetX - centerSourceX;
+		const dy = centerTargetY - centerSourceY;
+		const len = Math.sqrt(dx * dx + dy * dy) || 1;
+
+		// 進行方向に対して「右側」への法線ベクトル
+		const nx = (-dy / len) * offset;
+		const ny = (dx / len) * offset;
+
+		// 座標をずらす (単純加算により、距離に関係なく平行を維持)
+		sx += nx;
+		sy += ny;
+		tx += nx;
+		ty += ny;
+
+		// --- クランプ処理 (Adhere to Node) ---
+		// ずらした結果、ノードの領域外に出てしまった場合は枠線上（角）に戻す
+
+		// Sourceノードの範囲
+		const sX = sourceNode.position.x;
+		const sY = sourceNode.position.y;
+		const sW = sourceNode.width || 85;
+		const sH = sourceNode.height || 100;
+		// 範囲内に制限
+		sx = Math.max(sX, Math.min(sX + sW, sx));
+		sy = Math.max(sY, Math.min(sY + sH, sy));
+
+		// Targetノードの範囲
+		const tX = targetNode.position.x;
+		const tY = targetNode.position.y;
+		const tW = targetNode.width || 85;
+		const tH = targetNode.height || 100;
+		// 範囲内に制限
+		tx = Math.max(tX, Math.min(tX + tW, tx));
+		ty = Math.max(tY, Math.min(tY + tH, ty));
+	}
 
 	const opacity = style?.opacity ?? 1;
-	// ★追加: スタイルに stroke (色) が指定されていればそれを使う。なければデフォルトのグレー
-	const color = style?.stroke || "#b1b1b7";
+	const strokeColor = style?.stroke || "#b1b1b7";
 
-	// --- 矢印と線の座標計算 ---
+	// --- 矢印の形状計算 ---
 	const angle = Math.atan2(ty - sy, tx - sx);
 	const arrowLength = 14;
 	const arrowWidth = 7;
@@ -36,18 +89,14 @@ export default function SimpleFloatingEdge({
 
 	const p1x = tx - arrowLength * cos + arrowWidth * sin;
 	const p1y = ty - arrowLength * sin - arrowWidth * cos;
-
 	const p2x = tx - arrowLength * cos - arrowWidth * sin;
 	const p2y = ty - arrowLength * sin + arrowWidth * cos;
 
-	// 常に矢印パスを作成
 	const arrowPath = `M ${tx} ${ty} L ${p1x} ${p1y} L ${p2x} ${p2y} Z`;
 
-	// 常に線の終点を手前にずらす
 	const lineTargetX = tx - (arrowLength - 2) * cos;
 	const lineTargetY = ty - (arrowLength - 2) * sin;
 
-	// 線のパス生成
 	const [edgePath, labelX, labelY] = getStraightPath({
 		sourceX: sx,
 		sourceY: sy,
@@ -57,7 +106,6 @@ export default function SimpleFloatingEdge({
 
 	return (
 		<>
-			{/* クリック判定用の透明な太い線 */}
 			<path
 				d={edgePath}
 				style={{
@@ -69,36 +117,34 @@ export default function SimpleFloatingEdge({
 				}}
 			/>
 
-			{/* 本来の見える線 */}
 			<path
 				id={id}
 				className="react-flow__edge-path"
 				d={edgePath}
 				markerEnd={undefined}
-				// styleには strokeColor が含まれているので、線は自動的にその色になる
-				style={style}
+				style={{ ...style, fill: "none" }}
 			/>
 
-			{/* 矢印 (常に描画) */}
 			<path
 				d={arrowPath}
 				className="edge-arrow"
-				// ★修正: fill に抽出した color を適用することで、線と矢印の色を合わせる
-				style={{ opacity, fill: color }}
+				style={{ opacity, fill: strokeColor }}
 			/>
 
-			{/* ラベル */}
 			{label && (
 				<text
 					x={labelX}
-					y={labelY - 10}
+					y={labelY - (hasBidirectionalEdge ? 0 : 10)}
 					textAnchor="middle"
 					style={{
 						fontSize: 12,
-						fill: color, // ★修正: テキストも色を合わせる
 						fontWeight: "bold",
 						pointerEvents: "none",
 						opacity,
+						fill: "#333",
+						stroke: "white",
+						strokeWidth: "3px",
+						paintOrder: "stroke",
 					}}
 				>
 					{label}

@@ -1,0 +1,23 @@
+/* --- 人物ノード --- */
+.person-node {
+  padding: 10px; border-radius: 8px; background: var(--white); width: 85px; text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.2s ease; cursor: pointer; pointer-events: auto !important;
+}
+.person-node:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important; transform: translateY(-2px);
+  border-color: var(--primary-color) !important; z-index: 1000;
+}
+.person-node-image {
+  width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;
+  display: block; margin-left: auto; margin-right: auto; border: 1px solid #ddd; background: #fff;
+}
+.person-node-label { font-weight: bold; font-size: 12px; margin-bottom: 4px; word-break: break-all; }
+.person-node-desc { font-size: 9px; color: var(--text-sub); line-height: 1.2; }
+
+/* --- React Flow Edges --- */
+.react-flow__edge-path { transition: stroke 0.2s, stroke-width 0.2s; stroke: #b1b1b7; fill: none; }
+.edge-arrow { transition: fill 0.2s; fill: #b1b1b7; pointer-events: none; }
+
+.react-flow__edge:hover .react-flow__edge-path { stroke: var(--primary-color) !important; stroke-width: 4px !important; }
+.react-flow__edge:hover .edge-arrow { fill: var(--primary-color) !important; }
+.react-flow__edge:hover text { fill: var(--primary-color) !important; font-weight: bold !important; transition: fill 0.2s; }

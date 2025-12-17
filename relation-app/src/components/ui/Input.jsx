@@ -1,14 +1,37 @@
-import { STYLES } from "../../constants";
-
-// ★修正: containerStyle を受け取れるように変更
-export default function Input({ label, textarea, containerStyle, ...props }) {
+export default function Input({
+	label,
+	value,
+	onChange,
+	placeholder,
+	type = "text",
+	textarea = false,
+	rows = 3,
+	containerStyle = {}, // 外部からマージン等を調整したい場合用
+	accept, // file input用
+}) {
 	return (
-		<div style={{ marginBottom: "8px", ...containerStyle }}>
-			{label && <label style={STYLES.label}>{label}</label>}
+		<div className="input-group" style={containerStyle}>
+			{label && <label className="input-label">{label}</label>}
+
 			{textarea ? (
-				<textarea style={{ ...STYLES.input, minHeight: "60px" }} {...props} />
+				<textarea
+					className="input-field input-field-textarea"
+					value={value}
+					onChange={onChange}
+					placeholder={placeholder}
+					rows={rows}
+				/>
 			) : (
-				<input style={STYLES.input} {...props} />
+				<input
+					type={type}
+					className="input-field"
+					value={value} // type="file" の時は value は無視される(警告が出る場合がある)が、Reactの制御としてはこのままで概ね動作する。厳密にはfileの時はvalue={undefined}にするのがベスト。
+					// 簡易修正:
+					// value={type === 'file' ? undefined : value}
+					onChange={onChange}
+					placeholder={placeholder}
+					accept={accept}
+				/>
 			)}
 		</div>
 	);

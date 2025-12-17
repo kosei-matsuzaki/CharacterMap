@@ -1,78 +1,64 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDialog } from "../contexts/DialogContext";
+import { DiagramRepository } from "../services/DiagramRepository";
 
 export default function Home() {
 	const navigate = useNavigate();
+	const { showConfirm } = useDialog();
 
-	// 【修正ポイント】
-	// useEffectを使わず、useStateの初期化時に関数を使ってデータを読み込みます。
-	// これにより "Calling setState synchronously within an effect" エラーが解消されます。
 	const [diagrams, setDiagrams] = useState(() => {
-		try {
-			const savedData = JSON.parse(localStorage.getItem("my-diagrams") || "{}");
-			// オブジェクトを配列に変換して更新日順に並べる
-			return Object.values(savedData).sort(
-				(a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-			);
-		} catch (error) {
-			console.error("Failed to load diagrams:", error);
-			return [];
-		}
+		const allData = DiagramRepository.getAll();
+		return Object.values(allData).sort(
+			(a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+		);
 	});
 
-	// 新規作成処理
 	const handleCreateNew = () => {
 		const newId = crypto.randomUUID();
 		navigate(`/editor/${newId}`);
 	};
 
-	// 削除処理
 	const handleDelete = (id, e) => {
-		e.stopPropagation(); // 行クリックイベントを止める
-		if (window.confirm("本当に削除しますか？")) {
-			const savedData = JSON.parse(localStorage.getItem("my-diagrams") || "{}");
-			delete savedData[id];
-			localStorage.setItem("my-diagrams", JSON.stringify(savedData));
-
-			// 削除後のデータを再計算してStateを更新
-			const newList = Object.values(savedData).sort(
-				(a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-			);
-			setDiagrams(newList);
-		}
+		e.stopPropagation();
+		showConfirm(
+			"本当に削除しますか？\nこの操作は元に戻せません。",
+			() => {
+				DiagramRepository.delete(id);
+				const allData = DiagramRepository.getAll();
+				const newList = Object.values(allData).sort(
+					(a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+				);
+				setDiagrams(newList);
+			},
+			"削除確認"
+		);
 	};
 
 	return (
-		<div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-			<h1>相関図一覧</h1>
+		<div className="home-container">
+			<h1 className="home-title">相関図一覧</h1>
+
 			<button
 				onClick={handleCreateNew}
-				style={{
-					marginBottom: "20px",
-					padding: "10px 20px",
-					fontSize: "16px",
-					cursor: "pointer",
-				}}
+				className="btn btn-primary"
+				style={{ marginBottom: "20px", fontSize: "16px" }}
 			>
 				+ 新規作成
 			</button>
 
-			<table style={{ width: "100%", borderCollapse: "collapse" }}>
+			<table className="home-table">
 				<thead>
-					<tr style={{ background: "#eee", textAlign: "left" }}>
-						<th style={{ padding: "10px", border: "1px solid #ccc" }}>
-							タイトル
-						</th>
-						<th style={{ padding: "10px", border: "1px solid #ccc" }}>
-							更新日時
-						</th>
-						<th style={{ padding: "10px", border: "1px solid #ccc" }}>操作</th>
+					<tr>
+						<th style={{ width: "50%" }}>タイトル</th>
+						<th>更新日時</th>
+						<th style={{ width: "100px" }}>操作</th>
 					</tr>
 				</thead>
 				<tbody>
 					{diagrams.length === 0 ? (
 						<tr>
-							<td colSpan="3" style={{ padding: "20px", textAlign: "center" }}>
+							<td colSpan="3" className="home-empty">
 								まだ相関図がありません
 							</td>
 						</tr>
@@ -81,16 +67,22 @@ export default function Home() {
 							<tr
 								key={d.id}
 								onClick={() => navigate(`/viewer/${d.id}`)}
-								style={{ cursor: "pointer", borderBottom: "1px solid #ccc" }}
-								onMouseOver={(e) =>
-									(e.currentTarget.style.background = "#f9f9f9")
-								}
-								onMouseOut={(e) => (e.currentTarget.style.background = "white")}
+								className="home-row"
 							>
-								<td style={{ padding: "10px" }}>{d.name || "名称未設定"}</td>
-								<td style={{ padding: "10px" }}>{d.updatedAt}</td>
-								<td style={{ padding: "10px" }}>
-									<button onClick={(e) => handleDelete(d.id, e)}>削除</button>
+								<td>{d.name || "名称未設定"}</td>
+								<td>{d.updatedAt}</td>
+								<td style={{ textAlign: "center" }}>
+									<button
+										className="btn btn-danger"
+										style={{
+											minWidth: "60px",
+											padding: "4px 8px",
+											fontSize: "12px",
+										}}
+										onClick={(e) => handleDelete(d.id, e)}
+									>
+										削除
+									</button>
 								</td>
 							</tr>
 						))

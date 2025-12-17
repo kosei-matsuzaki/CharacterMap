@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TAG_COLORS } from "../../constants";
+import { useDialog } from "../../contexts/DialogContext";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Modal from "../ui/Modal";
@@ -12,13 +13,15 @@ export default function TagManagerModal({
 	onAddTag,
 }) {
 	const [newTagName, setNewTagName] = useState("");
+	const { showConfirm, showAlert } = useDialog();
 
-	// ランダムな色を選ぶ関数
 	const getRandomColor = () =>
 		TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
 
 	const handleAdd = () => {
-		if (!newTagName.trim()) return;
+		if (!newTagName.trim()) {
+			return showAlert("タグ名を入力してください", "入力エラー");
+		}
 
 		const newTag = {
 			id: crypto.randomUUID(),
@@ -28,6 +31,14 @@ export default function TagManagerModal({
 
 		onAddTag(newTag);
 		setNewTagName("");
+	};
+
+	const handleDeleteClick = (tagId) => {
+		showConfirm(
+			"このタグを削除しますか？\n設定されているすべての人物や関係線からもタグが外れます。",
+			() => onDeleteTag(tagId),
+			"タグ削除の確認"
+		);
 	};
 
 	return (
@@ -41,12 +52,10 @@ export default function TagManagerModal({
 				</Button>
 			}
 		>
-			{/* ★追加: 新規タグ追加フォーム */}
+			{/* 新規追加フォーム */}
 			<div
+				className="flex-center"
 				style={{
-					display: "flex",
-					gap: "8px",
-					alignItems: "flex-end",
 					marginBottom: "15px",
 					paddingBottom: "10px",
 					borderBottom: "1px solid #eee",
@@ -57,38 +66,27 @@ export default function TagManagerModal({
 						placeholder="新しいタグ名"
 						value={newTagName}
 						onChange={(e) => setNewTagName(e.target.value)}
-						containerStyle={{ marginBottom: 0 }} // マージン調整
+						containerStyle={{ marginBottom: 0 }}
 					/>
 				</div>
 				<Button onClick={handleAdd}>追加</Button>
 			</div>
 
+			{/* タグ一覧 */}
 			<div style={{ maxHeight: "300px", overflowY: "auto" }}>
 				{tags.length === 0 ? (
-					<p style={{ fontSize: "12px", color: "#777" }}>
+					<p style={{ fontSize: "12px", color: "var(--text-light)" }}>
 						登録されたタグはありません
 					</p>
 				) : (
-					<ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+					<ul className="tag-manager-list">
 						{tags.map((tag) => (
-							<li
-								key={tag.id}
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									padding: "8px 0",
-									borderBottom: "1px solid #f0f0f0",
-								}}
-							>
+							<li key={tag.id} className="tag-manager-item">
 								<span
+									className="tag-manager-label"
 									style={{
 										background: tag.color.bg,
 										color: tag.color.text,
-										padding: "2px 8px",
-										borderRadius: "4px",
-										fontSize: "12px",
-										fontWeight: "500",
 									}}
 								>
 									{tag.label}
@@ -100,7 +98,7 @@ export default function TagManagerModal({
 										fontSize: "10px",
 										minWidth: "50px",
 									}}
-									onClick={() => onDeleteTag(tag.id)}
+									onClick={() => handleDeleteClick(tag.id)}
 								>
 									削除
 								</Button>
