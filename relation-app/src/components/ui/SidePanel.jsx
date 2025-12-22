@@ -4,6 +4,7 @@ import defaultImage from "../../assets/noImage.jpg";
 import { useDialog } from "../../contexts/DialogContext";
 import TagSelector from "../diagram/TagSelector";
 import Button from "./Button";
+import { IconArrowRight, IconX } from "./Icons";
 import Input from "./Input";
 
 // --- 画像プレースホルダー ---
@@ -143,17 +144,13 @@ function PersonPanelContent({
 								</div>
 							</div>
 							{image && (
-								<button
+								<Button
+									variant="secondary"
+									className="btn-sm"
 									onClick={() => setImage(null)}
-									className="btn btn-secondary"
-									style={{
-										fontSize: "10px",
-										padding: "2px 6px",
-										minWidth: "auto",
-									}}
 								>
 									画像削除
-								</button>
+								</Button>
 							)}
 						</div>
 
@@ -182,14 +179,12 @@ function PersonPanelContent({
 				) : (
 					/* --- 閲覧モード --- */
 					<>
-						{/* ★修正: paddingRightを追加して閉じるボタンとの被りを回避 */}
 						<div
 							className="flex-center"
 							style={{
 								marginBottom: "20px",
-								// alignItems: 'flex-start', // ←削除: これを消すことで .flex-center の align-items: center が効き、中央揃えになります
 								paddingRight: "40px",
-								gap: "20px", // ←追加: 画像とテキストの間隔を広げる
+								gap: "20px",
 							}}
 						>
 							<img
@@ -318,32 +313,38 @@ function PersonPanelContent({
 			</div>
 
 			{!readOnly && (
-				<div className="panel-footer">
+				<>
 					{isEditing ? (
-						<>
-							{!isNewNode && (
-								<Button
-									variant="danger"
-									onClick={handleDeleteClick}
-									style={{ marginRight: "auto" }}
-								>
-									削除
-								</Button>
-							)}
-							<Button variant="secondary" onClick={handleCancel}>
+						<div className="panel-footer">
+							<Button
+								variant="secondary"
+								onClick={handleCancel}
+								style={{ width: "100%" }}
+							>
 								キャンセル
 							</Button>
-							<Button onClick={handleSaveClick}>保存</Button>
-						</>
+							<Button onClick={handleSaveClick} style={{ width: "100%" }}>
+								保存
+							</Button>
+						</div>
 					) : (
-						<Button
-							onClick={() => setIsEditing(true)}
-							style={{ width: "100%" }}
-						>
-							情報を編集
-						</Button>
+						<div className="panel-footer">
+							<Button
+								variant="danger"
+								onClick={handleDeleteClick}
+								style={{ width: "100%" }}
+							>
+								削除する
+							</Button>
+							<Button
+								onClick={() => setIsEditing(true)}
+								style={{ width: "100%" }}
+							>
+								編集する
+							</Button>
+						</div>
 					)}
-				</div>
+				</>
 			)}
 		</>
 	);
@@ -450,7 +451,9 @@ function EdgePanelContent({
 									))}
 								</select>
 							</div>
-							<div style={{ marginTop: "25px", fontSize: "16px" }}>→</div>
+							<div style={{ marginTop: "25px", color: "#999" }}>
+								<IconArrowRight size={24} />
+							</div>
 							<div style={{ flex: 1 }}>
 								<label className="input-label">終点</label>
 								<select
@@ -494,16 +497,7 @@ function EdgePanelContent({
 					<div
 						style={{ display: "flex", flexDirection: "column", gap: "20px" }}
 					>
-						<h3
-							style={{
-								margin: 0,
-								fontSize: "16px",
-								borderBottom: "1px solid #eee",
-								paddingBottom: "10px",
-							}}
-						>
-							関係の詳細
-						</h3>
+						<h3 style={{ margin: 0, fontSize: "16px" }}>関係の詳細</h3>
 
 						{/* ★修正: 画像を追加しレイアウト調整 */}
 						<div
@@ -539,14 +533,8 @@ function EdgePanelContent({
 								/>
 							</div>
 
-							<div
-								style={{
-									fontSize: "24px",
-									color: "var(--primary-color)",
-									fontWeight: "bold",
-								}}
-							>
-								→
+							<div style={{ color: "var(--primary-color)" }}>
+								<IconArrowRight size={32} />
 							</div>
 
 							<div
@@ -621,32 +609,38 @@ function EdgePanelContent({
 			</div>
 
 			{!readOnly && (
-				<div className="panel-footer">
+				<>
 					{isEditing ? (
-						<>
-							{!isNewEdge && (
-								<Button
-									variant="danger"
-									onClick={handleDeleteClick}
-									style={{ marginRight: "auto" }}
-								>
-									削除
-								</Button>
-							)}
-							<Button variant="secondary" onClick={handleCancel}>
+						<div className="panel-footer">
+							<Button
+								variant="secondary"
+								onClick={handleCancel}
+								style={{ width: "100%" }}
+							>
 								キャンセル
 							</Button>
-							<Button onClick={handleSaveClick}>保存</Button>
-						</>
+							<Button onClick={handleSaveClick} style={{ width: "100%" }}>
+								保存
+							</Button>
+						</div>
 					) : (
-						<Button
-							onClick={() => setIsEditing(true)}
-							style={{ width: "100%" }}
-						>
-							関係を編集
-						</Button>
+						<div className="panel-footer">
+							<Button
+								variant="danger"
+								onClick={handleDeleteClick}
+								style={{ width: "100%" }}
+							>
+								削除する
+							</Button>
+							<Button
+								onClick={() => setIsEditing(true)}
+								style={{ width: "100%" }}
+							>
+								編集する
+							</Button>
+						</div>
 					)}
-				</div>
+				</>
 			)}
 		</>
 	);
@@ -681,9 +675,15 @@ export default function SidePanel({
 					<Button
 						variant="secondary"
 						onClick={onClose}
-						style={{ minWidth: "30px", padding: "5px 10px" }}
+						style={{
+							minWidth: "36px",
+							width: "36px",
+							height: "36px",
+							padding: 0,
+							borderRadius: "50%",
+						}}
 					>
-						×
+						<IconX size={20} />
 					</Button>
 				</div>
 

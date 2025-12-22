@@ -1,8 +1,14 @@
 import { useEffect } from "react";
-// STYLES の import は不要
+import { IconX } from "./Icons";
 
-export default function Modal({ isOpen, onClose, title, children, footer }) {
-	// ESCキーで閉じる処理
+export default function Modal({
+	isOpen,
+	onClose,
+	title,
+	children,
+	footer,
+	isCheck,
+}) {
 	useEffect(() => {
 		const handleEsc = (e) => {
 			if (e.key === "Escape") onClose();
@@ -18,19 +24,11 @@ export default function Modal({ isOpen, onClose, title, children, footer }) {
 			<div className="modal-container" onClick={(e) => e.stopPropagation()}>
 				<div className="modal-header">
 					<h2 className="modal-title">{title}</h2>
-					{/* 閉じるボタン (x) */}
-					<button
-						onClick={onClose}
-						style={{
-							border: "none",
-							background: "none",
-							fontSize: "20px",
-							cursor: "pointer",
-							color: "#999",
-						}}
-					>
-						×
-					</button>
+					{!isCheck && (
+						<button className="modal-close-btn" onClick={onClose}>
+							<IconX size={20} />
+						</button>
+					)}
 				</div>
 
 				<div className="modal-body">{children}</div>

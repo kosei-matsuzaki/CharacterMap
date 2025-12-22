@@ -14,6 +14,7 @@ import SidePanel from "../components/ui/SidePanel";
 import { EDGE_TYPES, NODE_TYPES } from "../constants";
 import { useDiagramFilter } from "../hooks/useDiagramFilter";
 
+import { IconArrowLeft, IconEdit } from "../components/ui/Icons";
 import { useLoading } from "../contexts/LoadingContext";
 import { Diagram } from "../models";
 import { DiagramRepository } from "../services/DiagramRepository";
@@ -77,7 +78,7 @@ export default function Viewer() {
 				>
 					<div className="flex-center">
 						<Button variant="secondary" onClick={() => navigate("/")}>
-							← 一覧へ
+							<IconArrowLeft /> 一覧へ
 						</Button>
 						<h2
 							style={{ margin: 0, fontSize: "18px", color: "var(--text-main)" }}
@@ -85,7 +86,9 @@ export default function Viewer() {
 							{initialDiagram.name}
 						</h2>
 					</div>
-					<Button onClick={() => navigate(`/editor/${id}`)}>✎ 編集する</Button>
+					<Button onClick={() => navigate(`/editor/${id}`)}>
+						<IconEdit /> 編集する
+					</Button>
 				</div>
 
 				<div className="filter-bar">

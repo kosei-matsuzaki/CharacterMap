@@ -1,50 +1,204 @@
 /* --- ボタン --- */
 .btn {
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 13px;
   min-width: 80px;
+  /* height: 36px;  ← ★削除: 高さを固定しない */
+  padding: 8px 16px; /* ★追加: 上下の余白で高さを確保 (8px+13px(文字)+8px ≈ 30~32px程度) */
   text-align: center;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  line-height: 1.5; /* ★追加: 行高を整える */
 }
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+  min-width: auto; /* 幅制限を解除 */
+  border-radius: 4px;
+}
+
+/* ホバー時は位置を動かさず、少し明るく/濃くするか影を強める */
 .btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* ふわっとした影 */
 }
+
+/* クリック時に「押し込まれる」演出 */
 .btn:active {
-  transform: translateY(0);
+  transform: scale(0.98); /* 全体がわずかに縮む */
   box-shadow: none;
 }
-.btn-primary { background: var(--primary-color); color: white; padding: 6px 16px; }
-.btn-danger { background: var(--danger-color); color: white; padding: 6px 16px; }
-.btn-secondary { background: white; color: var(--text-sub); border: 1px solid var(--border-color); padding: 6px 16px; }
-.btn-icon { background: transparent; color: var(--text-sub); min-width: auto; padding: 5px; font-size: 16px; }
-.btn-icon:hover { background: rgba(0,0,0,0.05); transform: rotate(15deg); }
+
+/* --- バリエーション --- */
+
+/* Primary: メインアクション (鮮やかな青) */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: transparent;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover); /* 少し濃い青へ */
+}
+
+/* Danger: 削除など (赤) */
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+  border-color: transparent;
+}
+.btn-danger:hover {
+  filter: brightness(0.9); /* 少し暗くする */
+}
+
+/* Secondary: キャンセルやサブ操作 (白背景 + 枠線) */
+.btn-secondary {
+  background-color: white;
+  color: var(--text-main);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.btn-secondary:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+  color: #000;
+}
+
+/* Icon: ツールバーのアイコンボタン */
+.btn-icon {
+  background: transparent;
+  color: var(--text-sub);
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0; /* paddingで崩れないように0にする */
+  border-color: transparent;
+  box-shadow: none;
+  font-size: 18px;
+  border-radius: 50%;
+  display: flex; /* flex指定を明示 */
+  align-items: center;
+  justify-content: center;
+}
+.btn-icon:hover {
+  background-color: rgba(0, 0, 0, 0.06); /* 薄いグレーの背景が出る */
+  box-shadow: none;
+  color: var(--text-main);
+  transform: none; /* 回転させない */
+}
+.btn-icon:active {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(0.92);
+}
 
 /* --- モーダル --- */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; justify-content: center; z-index: 3000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px); /* 背景を少しぼかすモダンな演出 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: modalFadeIn 0.2s ease-out forwards;
 }
+
 .modal-container {
-  background: white; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; max-height: 90vh;
+  background: white;
+  border-radius: 12px; /* 丸みを少し強く */
+  width: 450px; /* 少し広げる */
+  max-width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* 深い影で浮遊感を出す */
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* 心地よいバネのような動き */
+  overflow: hidden; /* 角丸からはみ出さないように */
 }
+
 .modal-header {
-  margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--bg-gray); /* 薄い境界線 */
 }
-.modal-title { margin: 0; font-size: 18px; color: var(--text-main); }
-.modal-body { flex: 1; overflow-y: auto; margin-bottom: 20px; }
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: #999;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-right: -8px; /* 右端の余白調整 */
+}
+
+.modal-close-btn:hover {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .modal-footer {
-  display: flex; justify-content: flex-end; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);
+  padding: 16px 24px;
+  background-color: #fcfcfc; /* ほんの少しだけ色を変えて区分け */
+  border-top: 1px solid var(--bg-gray);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* アニメーション定義 */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* --- 入力フォーム --- */

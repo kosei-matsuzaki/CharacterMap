@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TAG_COLORS } from "../../constants"; // 色定義は定数として使用
 import Button from "../ui/Button";
+import { IconPlus, IconX } from "../ui/Icons";
 import Input from "../ui/Input";
 
 export default function TagSelector({
@@ -64,17 +65,21 @@ export default function TagSelector({
 				{!isCreating && (
 					<button
 						onClick={() => setIsCreating(true)}
+						// height制限がなくなったので padding が効きます
 						style={{
 							border: "1px dashed #ccc",
 							background: "none",
 							borderRadius: "12px",
-							padding: "2px 8px",
+							padding: "4px 10px", // 少し広げる
 							fontSize: "11px",
 							cursor: "pointer",
 							color: "#777",
+							display: "inline-flex",
+							alignItems: "center",
+							gap: "4px",
 						}}
 					>
-						+ 作成
+						<IconPlus size={12} /> 作成
 					</button>
 				)}
 			</div>
@@ -90,15 +95,17 @@ export default function TagSelector({
 							containerStyle={{ marginBottom: 0 }}
 						/>
 					</div>
-					<Button onClick={handleCreate} style={{ padding: "6px 12px" }}>
-						追加
+					<Button onClick={handleCreate} className="btn-sm">
+						<IconPlus size={14} /> 追加
 					</Button>
+
+					{/* 閉じるボタン: btn-sm を適用 */}
 					<Button
 						variant="secondary"
 						onClick={() => setIsCreating(false)}
-						style={{ padding: "6px 12px" }}
+						className="btn-sm"
 					>
-						✕
+						<IconX size={16} />
 					</Button>
 				</div>
 			)}

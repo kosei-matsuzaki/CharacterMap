@@ -42,16 +42,7 @@ export default function TagManagerModal({
 	};
 
 	return (
-		<Modal
-			isOpen={isOpen}
-			onClose={onClose}
-			title="タグの管理"
-			footer={
-				<Button variant="secondary" onClick={onClose}>
-					閉じる
-				</Button>
-			}
-		>
+		<Modal isOpen={isOpen} onClose={onClose} title="タグの管理" isCheck={false}>
 			{/* 新規追加フォーム */}
 			<div
 				className="flex-center"
@@ -93,11 +84,7 @@ export default function TagManagerModal({
 								</span>
 								<Button
 									variant="danger"
-									style={{
-										padding: "4px 8px",
-										fontSize: "10px",
-										minWidth: "50px",
-									}}
+									className="btn-sm"
 									onClick={() => handleDeleteClick(tag.id)}
 								>
 									削除

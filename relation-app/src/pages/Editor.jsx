@@ -19,6 +19,13 @@ import { useLoading } from "../contexts/LoadingContext";
 import { Diagram, Person, Relationship, Tag } from "../models";
 import { DiagramRepository } from "../services/DiagramRepository";
 
+import {
+	IconArrowLeft,
+	IconCheck,
+	IconPlus,
+	IconSettings,
+} from "../components/ui/Icons";
+
 // EdgeModalのimport削除
 import TagManagerModal from "../components/modals/TagManagerModal";
 import Button from "../components/ui/Button";
@@ -248,9 +255,11 @@ export default function Editor() {
 		<div className="full-screen">
 			<div className="toolbar">
 				<div className="toolbar-row">
+					{/* ← 戻る */}
 					<Button variant="secondary" onClick={() => navigate(`/viewer/${id}`)}>
-						← 戻る
+						<IconArrowLeft /> 戻る
 					</Button>
+
 					<div className="title-input-container">
 						<Input
 							value={diagramName}
@@ -259,20 +268,30 @@ export default function Editor() {
 							placeholder="相関図タイトル"
 						/>
 					</div>
-					<Button onClick={handleAddPerson}>+ 人物</Button>
-					{/* ★修正: EdgeModalではなくPanelを開く */}
-					<Button onClick={handleAddEdge}>+ 関係</Button>
+
+					{/* + 人物 */}
+					<Button onClick={handleAddPerson}>
+						<IconPlus /> 人物
+					</Button>
+
+					{/* + 関係 */}
+					<Button onClick={handleAddEdge}>
+						<IconPlus /> 関係
+					</Button>
+
 					<Button
 						style={{ background: "var(--accent-color)" }}
 						onClick={onLayout}
 					>
 						整列
 					</Button>
+
+					{/* 保存 */}
 					<Button
 						style={{ background: "var(--success-color)", marginLeft: "auto" }}
 						onClick={handleSaveDiagram}
 					>
-						保存
+						<IconCheck /> 保存
 					</Button>
 				</div>
 
@@ -311,7 +330,7 @@ export default function Editor() {
 						onClick={() => setIsTagManagerOpen(true)}
 						title="タグ管理"
 					>
-						⚙️
+						<IconSettings size={20} />
 					</Button>
 				</div>
 			</div>

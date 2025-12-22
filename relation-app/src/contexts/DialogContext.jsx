@@ -62,16 +62,22 @@ export const DialogProvider = ({ children }) => {
 				isOpen={dialogConfig.isOpen}
 				onClose={closeDialog}
 				title={dialogConfig.title}
+				isCheck={true}
 				footer={
 					<>
 						{dialogConfig.type === "confirm" && (
-							<Button variant="secondary" onClick={closeDialog}>
+							<Button
+								variant="secondary"
+								onClick={closeDialog}
+								style={{ width: "100%" }}
+							>
 								キャンセル
 							</Button>
 						)}
 						<Button
 							variant={dialogConfig.type === "confirm" ? "danger" : "primary"}
 							onClick={handleConfirm}
+							style={{ width: "100%" }}
 						>
 							OK
 						</Button>
